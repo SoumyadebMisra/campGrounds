@@ -5,6 +5,7 @@ const model = require("../models/campground");
 const {campgroundSchema} = require("../schemas");
 const Review = require("../models/review");
 const {reviewSchema} = require("../schemas");
+const {isLoggedIn} = require('../middleware');
 
 const router = express.Router();
 
@@ -27,6 +28,7 @@ router
     })
   )
   .post(
+    isLoggedIn,
     validateCampground,catchAsync(async (req, res, next) => {
       const camp = new model(req.body.campground);
       await camp.save();
@@ -35,7 +37,7 @@ router
     })
   );
 
-router.route("/new").get((req, res) => {
+router.route("/new").get(isLoggedIn,(req, res) => {
   res.render("campgrounds/new");
 });
 
@@ -51,6 +53,7 @@ router.route("/:id")
   })
 )
 .delete(
+  isLoggedIn,
   catchAsync(async (req, res, next) => {
     const camp = await model.findByIdAndDelete(req.params.id);
     req.flash('success','Successfully deleted campground!');
@@ -59,6 +62,7 @@ router.route("/:id")
   })
 )
 .put(validateCampground,
+    isLoggedIn,
     catchAsync(async (req, res, next) => {
       await model.findByIdAndUpdate(req.params.id, req.body.campground );
       req.flash('success','Successfully updated campground');
@@ -70,6 +74,7 @@ router.route("/:id")
 router
   .route("/:id/edit")
   .get(
+    isLoggedIn,
     catchAsync(async (req, res, next) => {
       const camp = await model.findById(req.params.id);
       if(!camp){
