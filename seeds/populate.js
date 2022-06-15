@@ -18,6 +18,7 @@ const populate = async ()=>{
             location: campAddress,
             price: price,
             image: 'http://source.unsplash.com/collection/484351',
+            author:'62a9084606f53ca03ef9e944',
             description : desc
         })
         await camp.save();

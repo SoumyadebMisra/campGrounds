@@ -9,14 +9,17 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= campground.location%></li>
+                <li class="list-group-item">Submitted by <%= campground.author.username %></li>
                 <li class="list-group-item">₹<%= campground.price%>/night</li>
             </ul>
+            <% if(currentUser && campground.author.equals(currentUser._id)){ %>
             <div class="card-body">
                 <a class="card-link btn btn-info" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
                 <form class="d-inline" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>
                 </form>
             </div>
+            <%}%>
             <div class="card-footer text-muted">
                 2 days ago
             </div>
@@ -24,6 +27,7 @@
         
     </div>
     <div class="col-6">
+        <% if(currentUser){ %>
         <form action="/campgrounds/<%= campground._id%>/reviews" class="needs-validation" method="post" novalidate>
             <h2>Leave a Review</h2>
             <div class="mb-3">
@@ -36,18 +40,22 @@
             </div>
             <button class="btn btn-success">Submit</button>
         </form>
+        <%}%>
         <div class="reviews mt-3">
             <% for(let review of campground.reviews){ %>
                 <div class="mb-3 card">
                     <div class="card-body">
                         <h5><p>Rating: <%= review.rating %></p></h5>
+                        <h6 class="card-subtitle mb-2 text-muted">By <%= review.author.username%></h6>
                         <p>Review : <%= review.body %></p>
                     </div>
+                    <% if(currentUser && review.author.equals(currentUser._id)){ %>
                     <div class="card-body">
                         <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
                             <button class="btn btn-danger">Delete</button>
                         </form>
                     </div>
+                    <%}%>
                     
                 </div>
             <% } %>

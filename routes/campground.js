@@ -5,19 +5,9 @@ const model = require("../models/campground");
 const {campgroundSchema} = require("../schemas");
 const Review = require("../models/review");
 const {reviewSchema} = require("../schemas");
-const {isLoggedIn} = require('../middleware');
+const {isLoggedIn,isAuthor,validateCampground} = require('../middleware');
 
 const router = express.Router();
-
-
-const validateCampground = (req, res, next) => {
-    const { error } = campgroundSchema.validate(req.body);
-    if (error) {
-      const msg = error.details.map((el) => el.message).join(",");
-      throw new ExpressError(msg, 400);
-    }
-    next();
-  };
 
 router
   .route("/")
@@ -31,6 +21,7 @@ router
     isLoggedIn,
     validateCampground,catchAsync(async (req, res, next) => {
       const camp = new model(req.body.campground);
+      camp.author = req.user._id;
       await camp.save();
       req.flash('success','Successfully created campground!');
       res.redirect(`/campgrounds/${camp._id}`);
@@ -44,7 +35,8 @@ router.route("/new").get(isLoggedIn,(req, res) => {
 router.route("/:id")
 .get(
   catchAsync(async (req, res, next) => {
-    const campground = await model.findOne({ _id: req.params.id }).populate('reviews');
+    const campground = await model.findOne({ _id: req.params.id }).populate({path:'reviews',populate:{path:'author'}}).populate('author');
+    // console.log(campground);
     if(!campground){
       req.flash('error', 'Could not find the campground!');
       return res.redirect('/campgrounds');
@@ -54,6 +46,7 @@ router.route("/:id")
 )
 .delete(
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res, next) => {
     const camp = await model.findByIdAndDelete(req.params.id);
     req.flash('success','Successfully deleted campground!');
@@ -63,6 +56,7 @@ router.route("/:id")
 )
 .put(validateCampground,
     isLoggedIn,
+    isAuthor,
     catchAsync(async (req, res, next) => {
       await model.findByIdAndUpdate(req.params.id, req.body.campground );
       req.flash('success','Successfully updated campground');
@@ -75,6 +69,7 @@ router
   .route("/:id/edit")
   .get(
     isLoggedIn,
+    isAuthor,
     catchAsync(async (req, res, next) => {
       const camp = await model.findById(req.params.id);
       if(!camp){
