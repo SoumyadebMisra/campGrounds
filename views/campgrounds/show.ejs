@@ -2,8 +2,28 @@
 <link rel="stylesheet" type="text/css" href="/css/stars.css">
 <div class="row">
     <div class="col-6">
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+            <% campground.images.forEach((img,i)=>{%>
+              <div class="carousel-item <%= i === 0 ?'active':''%>">
+                <img src="<%= img.url %>" class="d-block w-100" alt="Campground image">
+              </div>
+             <%})%>
+            </div>
+            <%if(campground.images.length !== 1){%>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+            <%}%>
+          </div>
         <div class="card mb-3">
-            <img src="<%= campground.image%>" class="card-img-top" alt="...">
+            <!-- <img src="<%= campground.image%>" class="card-img-top" alt="..."> -->
+            
             <div class="card-body">
                 <h5 class="card-title"><%= campground.title%></h5>
                 <p class="card-text"><%= campground.description%></p>
@@ -28,6 +48,7 @@
         
     </div>
     <div class="col-6">
+        <div id="map"></div>
         <% if(currentUser){ %>
         <form action="/campgrounds/<%= campground._id%>/reviews" class="needs-validation" method="post" novalidate>
             <h2>Leave a Review</h2>
@@ -78,5 +99,22 @@
     </div>
     
 </div>
+
+<script>
+    const camp = <%- JSON.stringify(campground) %>;
+	mapboxgl.accessToken = '<%- process.env.MAPBOX_TOKEN %>';
+    const map = new mapboxgl.Map({
+    container: 'map', // container ID
+    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+    center: camp.geometry.coordinates, // starting position [lng, lat]
+    zoom: 7, // starting zoom
+    projection: 'globe' // display the map as a 3D globe
+    });
+    
+    map.on('style.load', () => {
+    map.setFog({}); // Set the default atmosphere style
+    });
+    new mapboxgl.Marker().setLngLat(camp.geometry.coordinates).addTo(map);
+</script>
 
 <%- include('footer'); -%>
