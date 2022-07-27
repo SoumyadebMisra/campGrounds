@@ -48,7 +48,7 @@
         
     </div>
     <div class="col-6">
-        <div id="map"></div>
+        <div id="map" class="map"></div>
         <% if(currentUser){ %>
         <form action="/campgrounds/<%= campground._id%>/reviews" class="needs-validation" method="post" novalidate>
             <h2>Leave a Review</h2>
@@ -105,7 +105,7 @@
 	mapboxgl.accessToken = '<%- process.env.MAPBOX_TOKEN %>';
     const map = new mapboxgl.Map({
     container: 'map', // container ID
-    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+    style: 'mapbox://styles/mapbox/light-v10', // style URL
     center: camp.geometry.coordinates, // starting position [lng, lat]
     zoom: 7, // starting zoom
     projection: 'globe' // display the map as a 3D globe
@@ -115,6 +115,12 @@
     map.setFog({}); // Set the default atmosphere style
     });
     new mapboxgl.Marker().setLngLat(camp.geometry.coordinates).addTo(map);
+    const nav = new mapboxgl.NavigationControl({
+    visualizePitch: true,
+    showCompass: true,
+    showZoom: true
+    });
+    map.addControl(nav, 'bottom-right');
 </script>
 
 <%- include('footer'); -%>

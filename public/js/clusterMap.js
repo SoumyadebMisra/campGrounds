@@ -69,6 +69,13 @@ map.on("load", () => {
     },
   });
 
+  const nav = new mapboxgl.NavigationControl({
+    visualizePitch: true,
+    showCompass: true,
+    showZoom: true
+    });
+    map.addControl(nav, 'bottom-right');
+
   // inspect a cluster on click
   map.on("click", "clusters", (e) => {
     const features = map.queryRenderedFeatures(e.point, {
