@@ -15,4 +15,4 @@ HTML,CSS for frontend
 EJS for templating
 
 ### App is hosted on heroku : 
-[campGrounds](https://cryptic-everglades-46128.herokuapp.com/)
+[campGrounds](campgrounds.up.railway.app)
