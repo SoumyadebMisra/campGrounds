@@ -15,4 +15,4 @@ HTML,CSS for frontend
 EJS for templating
 
 ### App is hosted on heroku : 
-[campGrounds](campgrounds.up.railway.app)
+[campGrounds](https://campgrounds.up.railway.app/)
